@@ -3,7 +3,7 @@ let morgan = require("morgan");
 let bodyParser = require('body-parser');
 let uuidv4 = require('uuid/v4');
 let mongoose = require('mongoose');
-let { PostList } = require('./model');
+let { PostList } = require('./blog-post-model');
 const  {DATABASE_URL, PORT} = require('./config');
 
 let app = express();
