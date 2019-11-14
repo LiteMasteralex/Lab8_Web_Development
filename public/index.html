@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Blog Post</title>
+	<link rel="stylesheet" type="text/css" href="./styles/index.css">
+</head>
+<body>
+	<header>
+		<h1>Random Blog for Random People</h1>
+	</header>
+	<div class="searchQuery">
+		<label for="query">Search by Author:</label>
+		<input type="text" name="query" id="searchValue">
+		<input type="button" id="searchAuthor" value="Search">
+		<input type="button" id="clearSearch"  value="Clear Search">
+	</div>
+	<main id="post_list">
+	</main>
+	<section id="post_creation">
+		<span class="form_container">
+			<form id="new_post">
+				<fieldset>
+					<legend>Create a Post</legend>
+					<div>
+						<label for="title">Title</label>
+						<input type="text" name="title" class="formElement" id="new_title">
+						<label for="author">Author</label>
+						<input type="text" name="author" class="formElement" id ="new_author">
+					</div>
+					<label for="content">Content</label>
+					<br>
+					<textarea id="new_content"></textarea>
+					<input type="submit" class="formButton" value="Save">
+				</fieldset>
+			</form>
+		</span>
+		<span class="form_container">
+			<form id="update_post">
+				<fieldset>
+					<legend>Update a Post</legend>
+					<label for="id">Select Post:</label>
+					<select id="up_list"></select>
+					<input type="checkbox" id="date"> Update date?
+					<div>
+						<label for="title">Title</label>
+						<input type="text" name="title" class="formElement" id="up_title">
+						<label for="author">Author</label>
+						<input type="text" name="author" class="formElement" id="up_author">
+					</div>
+					<label for="content">Content</label>
+					<br>
+					<textarea id="up_content"></textarea>
+					<input type="submit" class="formButton" value="Save">
+				</fieldset>
+			</form>
+		</span>
+	</section>
+	<section id="post_delete">
+		<span class="form_container_del">
+			<form id="del_post">
+				<fieldset>
+					<legend>Delete a Post</legend>
+					<div>
+						<label for="id">Select Post:</label>
+						<select id="dl_list"></select>
+					</div>
+					<input type="submit" class="formButton" value="Delete">
+				</fieldset>
+			</form>
+		</span>
+	</section>
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script src="./js/index.js" type="text/javascript"></script>
+</body>
+</html>
