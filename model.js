@@ -27,17 +27,16 @@ let PostList = {
 			throw Error(error);
 		});
 	},
+	getByID : function( id ) {
+		return Post.find({id: id}).then( post => {
+			return post;
+		}).catch(error => {
+			throw new Error(error);
+		});
+	},
 	post : function(newPost) { 
-		return PostList.getByID(newPost.id).then( post => {
-			if (post) {
-				return Post.create(newPost).then( resultPost => {
-					return resultPost;
-				}).catch( error => {
-					throw Error(error);
-				});
-			} else {
-				throw Error( "409" );
-			}
+		return Post.create(newPost).then( resultPost => {
+			return resultPost;
 		}).catch( error => {
 			throw Error(error);
 		});
@@ -50,22 +49,12 @@ let PostList = {
 		});
 	},
 	put : function( updatedPost ){
-		return PostList.getByID( updatedPost.id )
-			.then( post => {
-				if ( post ){
-					return Post.findOneAndUpdate( {id : post.id}, {$set : updatedPost}, {new : true})
-						.then( newPost => {
-							return newPost;
-						})
-						.catch(error => {
-							throw Error(error);
-						});
-				}
-				else{
-					throw Error( "404" );
-				}
+		return Post.findOneAndUpdate( {id : updatedPost.id}, {$set : updatedPost}, {new : true})
+			.then( newPost => {
+				console.log(newPost);
+				return newPost;
 			})
-			.catch( error => {
+			.catch(error => {
 				throw Error(error);
 			});
 	}

@@ -12,26 +12,6 @@ let jsonParser = bodyParser.json();
 app.use(express.static('public'));
 app.use(morgan("dev"));
 
-let posts = [{
-	id: uuidv4(),
-	title: "New songs on my Profile.",
-	content: "Hey guys just wanted to let you know that I added a few of my new songs to my spotify profile. Be sure to check them out!",
-	author: "Jakey",
-	publishDate : new Date('October 17, 2019')
-}, {
-	id: uuidv4(),
-	title: "Profanity Warning!",
-	content: "Please keep profanity to the minimum, we would like to avoid bannig people but we will if this continues.",
-	author: "Moderator",
-	publishDate : new Date('October 10, 2019')
-}, {
-	id: uuidv4(),
-	title: "Happy Start of Spooktober!!!1!",
-	content: "Looking forward to all your spooks, and the sugar overdose I'll get from the candy my kids gather.",
-	author: "Felix",
-	publishDate : new Date('October 1, 2019')
-}];
-
 
 let checkAttributes = function(post) {
 	for(let attr in post) {
@@ -62,17 +42,22 @@ app.get("/blog-post", function(req, res) {
 			status: 406
 		});
 	}
-	let post_list = posts.find(object => object.author == author);
-	if(post_list == undefined) {
-		res.statusMessage = "Author provided does not exist";
-		return res.status(404).json({
-			message: "Author provided does not exist",
-			status: 404
-		});
-	}
 
-	post_list = posts.filter(object => object.author == author);
-	return res.status(200).json(post_list);
+	PostList.getByAuthor(author).then( posts => {
+		if(posts.length == 0) {
+			res.statusMessage = "Author provided does not exist";
+			return res.status(404).json({
+				message: "Author provided does not exist",
+				status: 404
+			});
+		}
+		return res.status(200).json(posts);
+	}).catch(error => {
+		return res.status(500).json({
+			message: "Internal Server Error.",
+			status: 500
+		});
+	});
 });
 
 app.post("/blog-posts", jsonParser, function(req, res) {
@@ -86,23 +71,34 @@ app.post("/blog-posts", jsonParser, function(req, res) {
 	};
 	newPost.id = uuidv4();
 	newPost.publishDate = new Date();
-	posts.push(newPost);
-	return res.status(201).json(newPost);
+	PostList.post(newPost).then(post => {
+		return res.status(201).json(post);
+	}).catch(error => {
+		return res.status(500).json({
+			message: "Internal Server Error.",
+			status: 500
+		});
+	});
 });
 
 app.delete("/blog-posts/:id", jsonParser, function(req, res) {
 	let id = req.params.id;
-	let post = posts.find(object => object.id == id);
-	if (post == undefined) {
-		res.statusMessage = "No post exist with given id.";
-		return res.status(404).json({
-			message: "No post exist with given id.",
-			status: 404
+	PostList.delete(id).then( post => {
+		console.log(post);
+		if(post == null) {
+			res.statsMessage = "Post id not found";
+			return res.status(404).json({
+				message: "Post id not found",
+				status: 404
+			});
+		}
+		return res.status(202).json(post);
+	}).catch( error => {
+		return res.status(500).json({
+			message: "Internal Server Error.",
+			status: 500
 		});
-	}
-
-	posts = posts.filter(object => object.id != id);
-	return res.status(200).end();
+	});
 });
 
 app.put("/blog-posts/:id", jsonParser, function(req, res) {
@@ -122,32 +118,22 @@ app.put("/blog-posts/:id", jsonParser, function(req, res) {
 			status: 409
 		});
 	};
-	let post = posts.find(object => object.id == new_post.id);
-	if (post == undefined) {
-		res.statusMessage = "No post exist with given id.";
-		return res.status(404).json({
-			message: "No post exist with given id.",
-			status: 404
-		});
-	};
-	posts.forEach(function(entry) {
-		if(entry.id == new_post.id) {
-			if(new_post.author != undefined) {
-				entry.author = new_post.author
-			};
-			if(new_post.title != undefined) {
-				entry.title = new_post.title;
-			}
-			if(new_post.content != undefined) {
-				entry.content = new_post.content
-			}
-			if(new_post.publishDate != undefined) {
-				entry.publishDate = new_post.publishDate
-			}
+
+	PostList.put(new_post).then( post => {
+		if (post == null) {
+			res.statusMessage = "No post exist with given id.";
+			return res.status(404).json({
+				message: "No post exist with given id.",
+				status: 404
+			});
 		}
+		return res.status(202).json(post);
+	}).catch( error => {
+		return res.status(500).json({
+			message: "Internal Server Error.",
+			status: 500
+		});
 	});
-	post = posts.find(object => object.id == new_post.id);
-	return res.status(202).json(post);
 
 });
 
